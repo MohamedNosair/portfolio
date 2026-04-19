@@ -159,46 +159,56 @@ class BentoGridSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppTheme.space2,
-                vertical: AppTheme.space1,
-              ),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryBlue,
-                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-              ),
-              child: Text(
-                'EXPERIENCE',
-                style: AppTheme.labelLarge.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.space2,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryBlue,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                ),
+                child: Text(
+                  'EXPERIENCE',
+                  style: AppTheme.labelLarge.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: AppTheme.space3),
-            Text(
-              '4+ Years',
-              style: AppTheme.displayMedium.copyWith(
-                color: AppTheme.primaryBlue,
+              const SizedBox(height: 16),
+              Text(
+                '4+ Years',
+                style: AppTheme.displayMedium.copyWith(
+                  color: AppTheme.primaryBlue,
+                  fontSize: 42,
+                ),
               ),
-            ),
-            const SizedBox(height: AppTheme.space2),
-            Text(
-              'Building scalable mobile applications with Flutter',
-              style: AppTheme.bodyLarge,
-            ),
-          ],
+              const SizedBox(height: 12),
+              Text(
+                'Building scalable mobile applications with Flutter',
+                style: AppTheme.bodyLarge.copyWith(
+                  fontSize: 16,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
-        Row(
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
           children: [
             _StatBadge(label: 'Flutter', icon: Icons.phone_android),
-            const SizedBox(width: AppTheme.space2),
             _StatBadge(label: 'Clean Code', icon: Icons.code),
-            const SizedBox(width: AppTheme.space2),
             _StatBadge(label: 'Remote', icon: Icons.location_on),
           ],
         ),
@@ -210,18 +220,19 @@ class BentoGridSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
           Icons.location_city,
-          size: 32,
+          size: 28,
           color: AppTheme.primaryBlue,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         Text(
           'Based in',
           style: AppTheme.bodyMedium.copyWith(
             color: AppTheme.textLight,
-            fontSize: 13,
+            fontSize: 12,
           ),
         ),
         const SizedBox(height: 4),
@@ -229,7 +240,10 @@ class BentoGridSection extends StatelessWidget {
           'Mansoura, Egypt',
           style: AppTheme.titleLarge.copyWith(
             fontWeight: FontWeight.w700,
+            fontSize: 18,
           ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -238,37 +252,42 @@ class BentoGridSection extends StatelessWidget {
   Widget _buildAchievementsCard() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'Key Achievements',
-          style: AppTheme.titleLarge,
+          style: AppTheme.titleLarge.copyWith(
+            fontSize: 20,
+          ),
         ),
-        const SizedBox(height: AppTheme.space4),
-        Wrap(
-          spacing: AppTheme.space3,
-          runSpacing: AppTheme.space3,
-          children: [
-            _AchievementItem(
-              icon: Icons.trending_up,
-              title: '99.2%',
-              subtitle: 'App Stability',
-            ),
-            _AchievementItem(
-              icon: Icons.speed,
-              title: '30%',
-              subtitle: 'Faster Dev Cycles',
-            ),
-            _AchievementItem(
-              icon: Icons.timer,
-              title: '30%',
-              subtitle: 'Improved Load Time',
-            ),
-            _AchievementItem(
-              icon: Icons.bug_report,
-              title: '40%',
-              subtitle: 'Less Bugs',
-            ),
-          ],
+        const SizedBox(height: 20),
+        Flexible(
+          child: Wrap(
+            spacing: 16,
+            runSpacing: 16,
+            children: [
+              _AchievementItem(
+                icon: Icons.trending_up,
+                title: '99.2%',
+                subtitle: 'App Stability',
+              ),
+              _AchievementItem(
+                icon: Icons.speed,
+                title: '30%',
+                subtitle: 'Faster Dev Cycles',
+              ),
+              _AchievementItem(
+                icon: Icons.timer,
+                title: '30%',
+                subtitle: 'Improved Load Time',
+              ),
+              _AchievementItem(
+                icon: Icons.bug_report,
+                title: '40%',
+                subtitle: 'Less Bugs',
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -278,21 +297,31 @@ class BentoGridSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
           Icons.email_outlined,
-          size: 32,
+          size: 28,
           color: AppTheme.primaryBlue,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         Text(
           'Ready to work',
-          style: AppTheme.titleLarge.copyWith(fontSize: 18),
+          style: AppTheme.titleLarge.copyWith(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 6),
         Text(
           'Let\'s build amazing apps',
-          style: AppTheme.bodyMedium.copyWith(fontSize: 13),
+          style: AppTheme.bodyMedium.copyWith(
+            fontSize: 12,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -319,13 +348,16 @@ class _BentoCardState extends State<_BentoCard> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 768;
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         height: widget.height,
-        padding: const EdgeInsets.all(AppTheme.space4),
+        padding: EdgeInsets.all(isMobile ? AppTheme.space3 : AppTheme.space4),
         decoration: AppTheme.bentoCardDecoration(
           backgroundColor: widget.color,
         ).copyWith(
@@ -364,8 +396,8 @@ class _StatBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppTheme.space2,
-        vertical: AppTheme.space1,
+        horizontal: 12,
+        vertical: 6,
       ),
       decoration: BoxDecoration(
         color: AppTheme.cardWhite,
@@ -380,15 +412,16 @@ class _StatBadge extends StatelessWidget {
         children: [
           Icon(
             icon,
-            size: 16,
+            size: 14,
             color: AppTheme.primaryBlue,
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 5),
           Text(
             label,
             style: AppTheme.labelLarge.copyWith(
               color: AppTheme.textDark,
               fontWeight: FontWeight.w600,
+              fontSize: 12,
             ),
           ),
         ],
@@ -411,8 +444,8 @@ class _AchievementItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 140,
-      padding: const EdgeInsets.all(AppTheme.space2),
+      width: 130,
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppTheme.cardWhite,
         borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
@@ -423,24 +456,28 @@ class _AchievementItem extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             icon,
-            size: 24,
+            size: 22,
             color: AppTheme.primaryBlue,
           ),
-          const SizedBox(height: AppTheme.space1),
+          const SizedBox(height: 6),
           Text(
             title,
             style: AppTheme.titleLarge.copyWith(
               color: AppTheme.primaryBlue,
+              fontSize: 20,
             ),
           ),
           Text(
             subtitle,
             style: AppTheme.bodyMedium.copyWith(
-              fontSize: 13,
+              fontSize: 12,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

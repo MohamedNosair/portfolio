@@ -4,6 +4,7 @@ import 'widgets/hero_section.dart';
 import 'widgets/bento_grid_section.dart';
 import 'widgets/projects_bento.dart';
 import 'widgets/skills_section.dart';
+import 'widgets/certifications_section.dart';
 import 'widgets/experience_timeline.dart';
 import 'widgets/contact_section.dart';
 
@@ -36,6 +37,7 @@ class _PortfolioHomeState extends State<PortfolioHome> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _aboutKey = GlobalKey();
   final GlobalKey _projectsKey = GlobalKey();
+  final GlobalKey _certificationsKey = GlobalKey();
   final GlobalKey _experienceKey = GlobalKey();
   final GlobalKey _contactKey = GlobalKey();
   bool _showScrollToTop = false;
@@ -117,6 +119,12 @@ class _PortfolioHomeState extends State<PortfolioHome> {
                 const SizedBox(height: AppTheme.space12),
 
                 Container(
+                  key: _certificationsKey,
+                  child: const CertificationsSection(),
+                ),
+                const SizedBox(height: AppTheme.space12),
+
+                Container(
                   key: _experienceKey,
                   child: const ExperienceTimeline(),
                 ),
@@ -192,6 +200,11 @@ class _PortfolioHomeState extends State<PortfolioHome> {
                 _NavLink(
                   text: 'Projects',
                   onTap: () => _scrollToSection(_projectsKey),
+                ),
+                const SizedBox(width: AppTheme.space4),
+                _NavLink(
+                  text: 'Certifications',
+                  onTap: () => _scrollToSection(_certificationsKey),
                 ),
                 const SizedBox(width: AppTheme.space4),
                 _NavLink(

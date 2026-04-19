@@ -44,7 +44,7 @@ class ProjectsBento extends StatelessWidget {
         children: PortfolioData.projects
             .map((project) => Padding(
                   padding: const EdgeInsets.only(bottom: AppTheme.space3),
-                  child: _ProjectCard(project: project),
+                  child: _ProjectCard(project: project, isMobile: true),
                 ))
             .toList(),
       );
@@ -54,15 +54,15 @@ class ProjectsBento extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: AppTheme.space3,
         mainAxisSpacing: AppTheme.space3,
-        childAspectRatio: 1.2,
+        childAspectRatio: 1.0,
       ),
       itemCount: PortfolioData.projects.length,
       itemBuilder: (context, index) {
-        return _ProjectCard(project: PortfolioData.projects[index]);
+        return _ProjectCard(project: PortfolioData.projects[index], isMobile: false);
       },
     );
   }
@@ -70,9 +70,11 @@ class ProjectsBento extends StatelessWidget {
 
 class _ProjectCard extends StatefulWidget {
   final Map<String, dynamic> project;
+  final bool isMobile;
 
   const _ProjectCard({
     required this.project,
+    required this.isMobile,
   });
 
   @override
@@ -92,7 +94,7 @@ class _ProjectCardState extends State<_ProjectCard> {
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(AppTheme.space4),
+        padding: EdgeInsets.all(widget.isMobile ? AppTheme.space3 : 20),
         decoration: AppTheme.bentoCardDecoration().copyWith(
           boxShadow: _isHovered
               ? [
@@ -118,43 +120,45 @@ class _ProjectCardState extends State<_ProjectCard> {
               widget.project['title'] as String,
               style: AppTheme.titleLarge.copyWith(
                 color: AppTheme.textDark,
+                fontSize: widget.isMobile ? 20 : 18,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: AppTheme.space2),
+            SizedBox(height: widget.isMobile ? 12 : 10),
 
             // Description
-            Expanded(
-              child: Text(
-                widget.project['description'] as String,
-                style: AppTheme.bodyMedium,
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
+            Text(
+              widget.project['description'] as String,
+              style: AppTheme.bodyMedium.copyWith(
+                fontSize: widget.isMobile ? 15 : 14,
               ),
+              maxLines: widget.isMobile ? 5 : 3,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: AppTheme.space3),
+            const Spacer(),
 
             // Tech Stack
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 6,
+              runSpacing: 6,
               children: tech
                   .take(4)
                   .map((t) => _TechChip(label: t))
                   .toList(),
             ),
-            const SizedBox(height: AppTheme.space3),
+            SizedBox(height: widget.isMobile ? 12 : 10),
 
             // Links
             if (links.isNotEmpty)
               Wrap(
-                spacing: AppTheme.space2,
-                runSpacing: AppTheme.space1,
+                spacing: 12,
+                runSpacing: 8,
                 children: links.entries.map((entry) {
                   return _LinkButton(
                     label: entry.key,
                     url: entry.value as String,
+                    isCompact: !widget.isMobile,
                   );
                 }).toList(),
               ),
@@ -176,8 +180,8 @@ class _TechChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 6,
+        horizontal: 10,
+        vertical: 5,
       ),
       decoration: BoxDecoration(
         color: AppTheme.primaryBlue.withOpacity(0.08),
@@ -191,7 +195,7 @@ class _TechChip extends StatelessWidget {
         label,
         style: AppTheme.labelLarge.copyWith(
           color: AppTheme.primaryBlue,
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -202,10 +206,12 @@ class _TechChip extends StatelessWidget {
 class _LinkButton extends StatefulWidget {
   final String label;
   final String url;
+  final bool isCompact;
 
   const _LinkButton({
     required this.label,
     required this.url,
+    this.isCompact = false,
   });
 
   @override
@@ -225,9 +231,9 @@ class _LinkButtonState extends State<_LinkButton> {
         onTap: () => html.window.open(widget.url, '_blank'),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
+          padding: EdgeInsets.symmetric(
+            horizontal: widget.isCompact ? 12 : 16,
+            vertical: widget.isCompact ? 6 : 8,
           ),
           decoration: BoxDecoration(
             color: _isHovered
@@ -244,16 +250,16 @@ class _LinkButtonState extends State<_LinkButton> {
             children: [
               Icon(
                 _getIconForLabel(widget.label),
-                size: 16,
+                size: widget.isCompact ? 14 : 16,
                 color: _isHovered ? Colors.white : AppTheme.primaryBlue,
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 5),
               Text(
                 widget.label,
                 style: AppTheme.labelLarge.copyWith(
                   color: _isHovered ? Colors.white : AppTheme.primaryBlue,
                   fontWeight: FontWeight.w600,
-                  fontSize: 13,
+                  fontSize: widget.isCompact ? 11 : 13,
                 ),
               ),
             ],
