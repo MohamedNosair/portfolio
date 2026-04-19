@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../utils/app_theme.dart';
 import '../data/portfolio_data.dart';
 import 'dart:html' as html;
@@ -10,6 +11,16 @@ class ProjectsBento extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 768;
+    final isTablet = screenWidth >= 768 && screenWidth < 1024;
+
+    int crossAxisCount;
+    if (isMobile) {
+      crossAxisCount = 1;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    } else {
+      crossAxisCount = 3;
+    }
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -27,43 +38,32 @@ class ProjectsBento extends StatelessWidget {
           const SizedBox(height: AppTheme.space2),
           Text(
             'A selection of projects I\'ve worked on',
-            style: AppTheme.bodyLarge,
+            style: AppTheme.bodyLarge.copyWith(
+              color: AppTheme.textGray,
+            ),
           ),
           const SizedBox(height: AppTheme.space6),
 
           // Projects Grid
-          _buildProjectsGrid(isMobile),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: isMobile ? AppTheme.space2 : AppTheme.space3,
+              mainAxisSpacing: isMobile ? AppTheme.space2 : AppTheme.space3,
+              childAspectRatio: isMobile ? 1.1 : 1.15,
+            ),
+            itemCount: PortfolioData.projects.length,
+            itemBuilder: (context, index) {
+              return _ProjectCard(
+                project: PortfolioData.projects[index],
+                isMobile: isMobile,
+              );
+            },
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _buildProjectsGrid(bool isMobile) {
-    if (isMobile) {
-      return Column(
-        children: PortfolioData.projects
-            .map((project) => Padding(
-                  padding: const EdgeInsets.only(bottom: AppTheme.space3),
-                  child: _ProjectCard(project: project, isMobile: true),
-                ))
-            .toList(),
-      );
-    }
-
-    // Desktop/Tablet: 2 columns
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: AppTheme.space3,
-        mainAxisSpacing: AppTheme.space3,
-        childAspectRatio: 1.0,
-      ),
-      itemCount: PortfolioData.projects.length,
-      itemBuilder: (context, index) {
-        return _ProjectCard(project: PortfolioData.projects[index], isMobile: false);
-      },
     );
   }
 }
@@ -94,20 +94,19 @@ class _ProjectCardState extends State<_ProjectCard> {
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.all(widget.isMobile ? AppTheme.space3 : 20),
-        decoration: AppTheme.bentoCardDecoration().copyWith(
+        decoration: AppTheme.cardDecoration().copyWith(
           boxShadow: _isHovered
               ? [
                   BoxShadow(
-                    color: AppTheme.primaryBlue.withOpacity(0.1),
-                    blurRadius: 24,
+                    color: AppTheme.primaryBlue.withOpacity(0.2),
+                    blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
                 ]
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 12,
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
                 ],
@@ -115,64 +114,203 @@ class _ProjectCardState extends State<_ProjectCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title
-            Text(
-              widget.project['title'] as String,
-              style: AppTheme.titleLarge.copyWith(
-                color: AppTheme.textDark,
-                fontSize: widget.isMobile ? 20 : 18,
+            // Header with icon and links
+            Container(
+              padding: EdgeInsets.all(widget.isMobile ? 16 : 18),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppTheme.primaryBlue.withOpacity(0.08),
+                    AppTheme.lightBlue.withOpacity(0.05),
+                  ],
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(AppTheme.radiusLarge),
+                  topRight: Radius.circular(AppTheme.radiusLarge),
+                ),
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(height: widget.isMobile ? 12 : 10),
-
-            // Description
-            Text(
-              widget.project['description'] as String,
-              style: AppTheme.bodyMedium.copyWith(
-                fontSize: widget.isMobile ? 15 : 14,
+              child: Row(
+                children: [
+                  // Project Icon
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryBlue,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.code,
+                      color: Colors.white,
+                      size: widget.isMobile ? 20 : 22,
+                    ),
+                  ),
+                  const Spacer(),
+                  // Links
+                  if (links.isNotEmpty)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: links.entries.map((entry) {
+                        final url = entry.value as String;
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: _IconButton(
+                            icon: _getIconForUrl(entry.key, url),
+                            url: url,
+                            tooltip: _getTooltipText(entry.key, url),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                ],
               ),
-              maxLines: widget.isMobile ? 5 : 3,
-              overflow: TextOverflow.ellipsis,
             ),
-            const Spacer(),
 
-            // Tech Stack
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: tech
-                  .take(4)
-                  .map((t) => _TechChip(label: t))
-                  .toList(),
-            ),
-            SizedBox(height: widget.isMobile ? 12 : 10),
+            // Content
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(widget.isMobile ? 16 : 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Text(
+                      widget.project['title'] as String,
+                      style: AppTheme.titleLarge.copyWith(
+                        color: AppTheme.textDark,
+                        fontSize: widget.isMobile ? 17 : 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 10),
 
-            // Links
-            if (links.isNotEmpty)
-              Wrap(
-                spacing: 12,
-                runSpacing: 8,
-                children: links.entries.map((entry) {
-                  return _LinkButton(
-                    label: entry.key,
-                    url: entry.value as String,
-                    isCompact: !widget.isMobile,
-                  );
-                }).toList(),
+                    // Description
+                    Expanded(
+                      child: Text(
+                        widget.project['description'] as String,
+                        style: AppTheme.bodyMedium.copyWith(
+                          fontSize: widget.isMobile ? 13 : 14,
+                          color: AppTheme.textGray,
+                          height: 1.5,
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Tech Stack
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: tech
+                          .take(3)
+                          .map((t) => _TechBadge(label: t))
+                          .toList(),
+                    ),
+                  ],
+                ),
               ),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  IconData _getIconForUrl(String label, String url) {
+    // Check if URL is GitHub
+    if (url.contains('github.com')) {
+      return FontAwesomeIcons.github;
+    }
+    // Check if URL is PlayStore
+    if (url.contains('play.google.com')) {
+      return FontAwesomeIcons.googlePlay;
+    }
+    // Check by label as fallback
+    switch (label.toLowerCase()) {
+      case 'github':
+        return FontAwesomeIcons.github;
+      case 'playstore':
+        return FontAwesomeIcons.googlePlay;
+      default:
+        return Icons.open_in_new_rounded;
+    }
+  }
+
+  String _getTooltipText(String label, String url) {
+    if (url.contains('github.com')) {
+      return 'View on GitHub';
+    }
+    if (url.contains('play.google.com')) {
+      return 'Download on PlayStore';
+    }
+    return label.toUpperCase();
+  }
+}
+
+class _IconButton extends StatefulWidget {
+  final IconData icon;
+  final String url;
+  final String tooltip;
+
+  const _IconButton({
+    required this.icon,
+    required this.url,
+    required this.tooltip,
+  });
+
+  @override
+  State<_IconButton> createState() => _IconButtonState();
+}
+
+class _IconButtonState extends State<_IconButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: widget.tooltip,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () => html.window.open(widget.url, '_blank'),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: _isHovered
+                  ? AppTheme.primaryBlue
+                  : AppTheme.cardWhite,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: _isHovered
+                    ? AppTheme.primaryBlue
+                    : AppTheme.borderGray,
+                width: 1,
+              ),
+            ),
+            child: FaIcon(
+              widget.icon,
+              size: 16,
+              color: _isHovered ? Colors.white : AppTheme.textGray,
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-class _TechChip extends StatelessWidget {
+class _TechBadge extends StatelessWidget {
   final String label;
 
-  const _TechChip({
+  const _TechBadge({
     required this.label,
   });
 
@@ -180,14 +318,14 @@ class _TechChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 5,
+        horizontal: 8,
+        vertical: 4,
       ),
       decoration: BoxDecoration(
-        color: AppTheme.primaryBlue.withOpacity(0.08),
+        color: AppTheme.cardWhite,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: AppTheme.primaryBlue.withOpacity(0.2),
+          color: AppTheme.primaryBlue.withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -195,92 +333,10 @@ class _TechChip extends StatelessWidget {
         label,
         style: AppTheme.labelLarge.copyWith(
           color: AppTheme.primaryBlue,
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: FontWeight.w600,
         ),
       ),
     );
-  }
-}
-
-class _LinkButton extends StatefulWidget {
-  final String label;
-  final String url;
-  final bool isCompact;
-
-  const _LinkButton({
-    required this.label,
-    required this.url,
-    this.isCompact = false,
-  });
-
-  @override
-  State<_LinkButton> createState() => _LinkButtonState();
-}
-
-class _LinkButtonState extends State<_LinkButton> {
-  bool _isHovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: () => html.window.open(widget.url, '_blank'),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: EdgeInsets.symmetric(
-            horizontal: widget.isCompact ? 12 : 16,
-            vertical: widget.isCompact ? 6 : 8,
-          ),
-          decoration: BoxDecoration(
-            color: _isHovered
-                ? AppTheme.primaryBlue
-                : AppTheme.primaryBlue.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-            border: Border.all(
-              color: AppTheme.primaryBlue,
-              width: 1,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                _getIconForLabel(widget.label),
-                size: widget.isCompact ? 14 : 16,
-                color: _isHovered ? Colors.white : AppTheme.primaryBlue,
-              ),
-              const SizedBox(width: 5),
-              Text(
-                widget.label,
-                style: AppTheme.labelLarge.copyWith(
-                  color: _isHovered ? Colors.white : AppTheme.primaryBlue,
-                  fontWeight: FontWeight.w600,
-                  fontSize: widget.isCompact ? 11 : 13,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  IconData _getIconForLabel(String label) {
-    switch (label.toLowerCase()) {
-      case 'github':
-        return Icons.code;
-      case 'playstore':
-        return Icons.shop;
-      case 'user':
-      case 'delivery':
-      case 'merchant':
-        return Icons.open_in_new;
-      default:
-        return Icons.link;
-    }
   }
 }
